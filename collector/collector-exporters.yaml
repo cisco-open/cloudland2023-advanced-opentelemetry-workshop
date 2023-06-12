@@ -1,0 +1,6 @@
+exporters:
+  # TODO:
+  # - Move logging & logging/detailed exporter here
+  # - Add exporter for 'otel desktop viewer'
+  # - Add exporter for 'teletrace'
+  # - Add exporter for 'prometheus'

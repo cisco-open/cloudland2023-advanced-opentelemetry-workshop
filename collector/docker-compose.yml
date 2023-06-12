@@ -1,0 +1,89 @@
+version: "2"
+services:
+  ## Application generating traces & metrics
+  app:
+    # TODO:
+    # - Finish the tutorial 1 such that your application emits traces & metrics
+    build: ../instrumentation/
+    ports:
+      - "8080:8080"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://loadbalancer1:4318
+      - OTEL_SERVICE_NAME="myapp"
+      # - OTEL_LOG_LEVEL="debug"
+    depends_on:
+      - loadbalancer1
+
+  ## Loadbalancers
+  loadbalancer1:
+    image: nginx:alpine
+    volumes:
+      - ./nginx-lb.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+    depends_on:
+      - collector1
+      - collector2
+  #loadbalancer2:
+  #  image: otel/opentelemetry-collector-contrib:latest
+  #  volumes:
+  #    - ./collector-config-lb.yaml:/etc/otelcol-contrib/config.yaml
+  #  ports:
+  #    - "14317:4317"
+  #    - "14318:4318"
+  #  depends_on:
+  #    - collector1
+  #    - collector2
+
+  ## OTel collectors
+  collector1:
+    image: otel/opentelemetry-collector-contrib:latest
+    # build: ./otelcol-contrib-root
+    # TODO: Setup a config sourced from 2 files
+    # command: ["--config=/etc/otel-contrib/config.yaml", "--config=file:/etc/otel-contrib/config-exporters.yaml"]
+    volumes:
+      - ./collector-config-1.yaml:/etc/otelcol-contrib/config.yaml
+      # - /var/run/docker.sock:/var/run/docker.sock
+      # - /:/hostfs
+      # - /var/lib/docker/containers:/var/lib/docker/containers
+      # - ./collector-exporters.yaml:/etc/otel-contrib/config-exporters.yaml
+    # ports:
+    #  - "8125:8125"
+    # environment:
+    # depends_on:
+    #  - viewer
+    #  - teletrace
+    #  - prometheus
+  collector2:
+    image: otel/opentelemetry-collector-contrib:latest
+    # TODO: Setup a config sourced from 2 files
+    # command: ["--config=/etc/otel-collector-config.yaml", "--config=file:/etc/otel-collector-config-exporters.yaml"]
+    volumes:
+      - ./collector-config-2.yaml:/etc/otelcol-contrib/config.yaml
+      # - ./collector-exporters.yaml:/etc/otel-collector-config-exporters.yaml
+    # depends_on:
+    #  - viewer
+    #  - teletrace
+    #  - prometheus
+
+  ## Local backends
+  # viewer:
+  #  build: ./desktop-viewer
+  #  ports:
+  #    - "8000:8000"
+  # teletrace:
+  #  image: teletrace/teletrace:latest
+  #  command: ["--config=/etc/teletrace-collector-config.yaml"]
+  #  volumes:
+  #    - ./teletrace.yaml:/etc/teletrace-collector-config.yaml
+  #  environment:
+  #    - SPANS_STORAGE_PLUGIN=sqlite
+  #  ports:
+  #    - "8090:8080"
+  # prometheus:
+  #  image: prom/prometheus:latest
+  #  volumes:
+  #    - "./prometheus.yaml:/etc/prometheus/prometheus.yml"
+  #  ports:
+  #    - "9090:9090"

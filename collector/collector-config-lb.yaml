@@ -1,0 +1,23 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+exporters:
+  loadbalancing:
+    protocol:
+      otlp:
+        tls:
+          insecure: true
+    resolver:
+      static:
+        hostnames:
+          - collector1
+          - collector2
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [loadbalancing]

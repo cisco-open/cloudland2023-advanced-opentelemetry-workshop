@@ -1,0 +1,24 @@
+{
+  "cSpell.words": [
+    "appdcloud",
+    "APPDYNAMICS",
+    "filelog",
+    "filelogreceiver",
+    "hostfs",
+    "hostmetrics",
+    "httpcheck",
+    "loadbalancer",
+    "loadbalancing",
+    "lowlevel",
+    "mysimpledb",
+    "opentelemetry",
+    "otel",
+    "otelcol",
+    "otlp",
+    "otlphttp",
+    "proto",
+    "receivercreator",
+    "teletrace",
+    "Zipkin"
+  ]
+}
