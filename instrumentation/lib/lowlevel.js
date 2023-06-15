@@ -15,10 +15,10 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-const util = require("util");
-const os = require("os");
-const path = require("path");
-const exec = util.promisify(require("child_process").exec);
+const util = require('util');
+const os = require('os');
+const path = require('path');
+const exec = util.promisify(require('child_process').exec);
 
 function sleep(delay, deviation) {
   d = delay + Math.random() * 2 * deviation - deviation;
@@ -28,7 +28,7 @@ function sleep(delay, deviation) {
 }
 
 function getFile() {
-  return path.join(os.tmpdir(), "my-simple-database");
+  return path.join(os.tmpdir(), 'my-simple-database');
 }
 
 class OperationNotSupportedError extends Error {
@@ -71,57 +71,57 @@ module.exports = {
     }
   },
   buildQuery: function (queryObject, sanitized = true) {
-    if (queryObject.op === "SELECT") {
-      let str = `${queryObject.op} ${queryObject.columns.join(",")} FROM ${
+    if (queryObject.op === 'SELECT') {
+      let str = `${queryObject.op} ${queryObject.columns.join(',')} FROM ${
         queryObject.table
       }`;
       if (queryObject.where.column) {
         str += ` WHERE ${queryObject.where.column} = ${
-          sanitized ? "?" : queryObject.where.value
+          sanitized ? '?' : queryObject.where.value
         }`;
       }
       return str;
     }
-    if (queryObject.op === "INSERT") {
+    if (queryObject.op === 'INSERT') {
       return `${queryObject.op} INTO ${
         queryObject.table
-      } (${queryObject.columns.join(",")}) VALUES (${
-        sanitized ? "?" : queryObject.values.join(",")
+      } (${queryObject.columns.join(',')}) VALUES (${
+        sanitized ? '?' : queryObject.values.join(',')
       })`;
     }
-    return "UNKNOWN";
+    return 'UNKNOWN';
   },
   parse: function (queryString) {
-    const segments = queryString.split(" ");
-    if (segments[0] === "SELECT" && segments.length === 4) {
+    const segments = queryString.split(' ');
+    if (segments[0] === 'SELECT' && segments.length === 4) {
       return {
-        op: "SELECT",
-        columns: ["*"],
-        table: "entries",
+        op: 'SELECT',
+        columns: ['*'],
+        table: 'entries',
         where: {},
       };
     }
-    if (segments[0] === "SELECT" && segments.length === 8) {
+    if (segments[0] === 'SELECT' && segments.length === 8) {
       return {
-        op: "SELECT",
-        columns: ["key", "value"],
-        table: "entries",
+        op: 'SELECT',
+        columns: ['key', 'value'],
+        table: 'entries',
         where: {
-          column: "key",
+          column: 'key',
           value: segments[7],
         },
       };
     }
-    if (segments[0] === "INSERT") {
+    if (segments[0] === 'INSERT') {
       return {
-        op: "INSERT",
-        columns: ["key", "value"],
-        table: "entries",
-        values: segments[5].slice(1, -1).split(","),
+        op: 'INSERT',
+        columns: ['key', 'value'],
+        table: 'entries',
+        values: segments[5].slice(1, -1).split(','),
       };
     }
     return {
-      op: "UNKNOWN",
+      op: 'UNKNOWN',
     };
   },
 };

@@ -15,15 +15,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-const express = require("express");
-const mySimpleDB = require("../lib/index.js");
+const express = require('express');
+const mySimpleDB = require('../lib/index.js');
 // TODO:
 // * Import OpenTelemetry API
 // * Acquire Tracer & Meter
 // * Create a counter (or UpDownCounter) called "query counter" of type INT
 //   that "counts how many queries have been executed"
 
-const PORT = parseInt(process.env.PORT || "8080");
+const PORT = parseInt(process.env.PORT || '8080');
 const app = express();
 
 function validate(key, value) {
@@ -33,23 +33,23 @@ function validate(key, value) {
   // The SpanStatus depends on the error
   // Set `exception.` attributes accordingly
   // Set `code.` attributes accordingly
-  if (typeof key !== "string") {
-    return { error: "key is not a string" };
+  if (typeof key !== 'string') {
+    return { error: 'key is not a string' };
   }
   if (isNaN(value)) {
-    return { error: "value is not a number" };
+    return { error: 'value is not a number' };
   }
   return { key, value };
 }
 
-app.get("/list", (req, res) => {
-  mySimpleDB.query("SELECT * FROM entries").then((result) => {
+app.get('/list', (req, res) => {
+  mySimpleDB.query('SELECT * FROM entries').then((result) => {
     // TODO: increment the query counter by 1
     res.send(result);
   });
 });
 
-app.get("/get", (req, res) => {
+app.get('/get', (req, res) => {
   const key = req.query.key;
   mySimpleDB
     .query(`SELECT * FROM entries WHERE key = ${key}`)
@@ -59,7 +59,7 @@ app.get("/get", (req, res) => {
     });
 });
 
-app.get("/add", (req, res) => {
+app.get('/add', (req, res) => {
   const { error, key, value } = validate(
     req.query.key,
     parseInt(req.query.value, 10)

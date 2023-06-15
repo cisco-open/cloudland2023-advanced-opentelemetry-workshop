@@ -1,4 +1,4 @@
-const { parse, read, write, buildQuery } = require("./lowlevel.js");
+const { parse, read, write, buildQuery } = require('./lowlevel.js');
 /*
   SPDX-License-Identifier: Apache-2.0
 
@@ -33,13 +33,13 @@ module.exports = {
 
     const query = parse(queryString);
     if (debug) {
-      console.log("Query: ", query);
+      console.log('Query: ', query);
     }
-    if (query.op === "INSERT") {
+    if (query.op === 'INSERT') {
       const result = await write(query.table, query.columns, query.values);
       return result;
     }
-    if (query.op === "SELECT") {
+    if (query.op === 'SELECT') {
       const result = read(query.table, query.columns, query.where);
       return result;
     }
