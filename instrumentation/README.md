@@ -9,6 +9,7 @@ with Node.JS:
 
 ```bash
 cd app
+npm install
 node app.js
 ```
 
@@ -21,6 +22,12 @@ npx nodemon app/app.js
 
 \*_Note_: By running the application from the parent directory, it will also be
 restarted when you apply changes to the `mysimpledb` library code.
+
+\*_Note_: If you don't have `Node.JS` installed locally, you can use a container for development:
+
+```bash
+docker run -p 8080:8080 --rm -t -i -v ${PWD}:/app:z node:18-alpine /bin/sh
+```
 
 ## Step 1: Application instrumentation
 
