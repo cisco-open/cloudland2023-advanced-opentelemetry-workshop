@@ -256,3 +256,76 @@ going on here:
 
 Run a `docker compose up` once again, after a while the logs for `collector1`
 should show the other logs as well.
+
+## Step 5: Multiple backends
+
+The OpenTelemetry Collector can have multiple receivers, but also multiple exporters
+to different backends. You can try this out by starting some OSS backends on your
+local machine, updating your docker-compose file:
+
+```yaml
+  ## Local backends
+  viewer:
+    build: ./desktop-viewer
+    ports:
+      - "8000:8000"
+  teletrace:
+    image: teletrace/teletrace:latest
+    command: ["--config=/etc/teletrace-collector-config.yaml"]
+    volumes:
+      - ./teletrace.yaml:/etc/teletrace-collector-config.yaml
+    environment:
+      - SPANS_STORAGE_PLUGIN=sqlite
+    ports:
+      - "8090:8080"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - "./prometheus.yaml:/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090" 
+```
+
+Instead of updating the existing config files, we want to make use of multiple
+config files which are merged by the collector for you. Update your composer
+setup accordingly:
+
+```yaml
+    command: ["--config=/etc/otel-collector-config.yaml", "--config=file:/etc/otel-collector-config-exporters.yaml"]
+    volumes:
+      - ./collector-config-2.yaml:/etc/otelcol-contrib/config.yaml
+      - ./collector-exporters.yaml:/etc/otel-collector-config-exporters.yaml
+```
+
+This will source the [collectors-exporters.yaml](./collector-exporters.yaml). Review
+that file and fill out the missing pieces, e.g. for prometheus you need:
+
+```yaml
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+```
+
+You can now turn on and turn off those exporters as you need them in your pipeline
+in the collector-config-1.yaml / collector-config-2.yaml, e.g.
+
+```yaml
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging,otlp/teletrace,otlp/viewer]
+    metrics:
+      receivers: [nginx,docker_stats,hostmetrics,httpcheck,otlp]
+      processors: [batch]
+      exporters: [logging,prometheus]
+    logs:
+      receivers: [otlp,receiver_creator]
+      processors: [batch]
+      exporters: [logging,otlp/viewer]
+
+```
+
+After restarting your docker compose setup, you should have multiple backends running
+and your traces should be received by teletrace & OTel desktop viewer, and your metrics
+by prometheus!
