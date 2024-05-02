@@ -1,8 +1,10 @@
 # CloudLand 2023 - Workshop "Advanced OpenTelemetry"
 
+> [!IMPORTANT]
+> This repository is archived and will not receive any updates or accept issues or pull requests
+
 _Workshop content for a session during
-[Cloud Land 2023](https://www.cloudland.org/en/home/) -- The content may not be
-updated after the conference_
+[Cloud Land 2023](https://www.cloudland.org/en/home/)_
 
 ## Abstract
 
